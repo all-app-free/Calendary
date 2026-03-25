@@ -3,201 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thrum & Luvyx Calendar</title>
+    <title>Luvyx Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ffffff;
-            --text: #1a1a1a;
-            --accent: #f0f0f0;
-            --border: #e0e0e0;
-            --highlight: #000000;
+            --bg-color: #f7f7f7;
+            --card-bg: #ffffff;
+            --accent-blue: #3b82f6;
+            --text-dark: #1a1a1a;
+            --text-gray: #757575;
+            --border-color: #eeeeee;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
         }
 
-        .container {
-            max-width: 400px;
+        .phone-container {
             width: 100%;
+            max-width: 450px;
+            background: var(--bg-color);
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
         }
 
-        h1 {
-            font-weight: 200;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            font-size: 1.5rem;
-            margin-bottom: 40px;
+        /* Header styl podle Xiaomi */
+        header {
+            padding: 40px 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 500;
+        }
+
+        .header-title span {
+            font-size: 1rem;
+            color: var(--text-gray);
+            font-weight: 400;
+            margin-left: 10px;
+        }
+
+        /* Kalendář grid */
+        .calendar-grid {
+            background: var(--card-bg);
+            margin: 0 15px;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .days-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
             text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            font-weight: 600;
+            margin-bottom: 15px;
         }
 
-        .input-group {
-            margin-bottom: 30px;
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            gap: 10px 0;
+        }
+
+        .day {
+            padding: 10px 0;
+            font-size: 0.95rem;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .day.selected {
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        /* Seznam událostí - Karty */
+        .event-section {
+            padding: 20px 15px;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .event-color {
+            width: 4px;
+            height: 24px;
+            border-radius: 2px;
+            margin-right: 15px;
+        }
+
+        .event-info {
+            flex-grow: 1;
+        }
+
+        .event-info h3 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .event-info p {
+            margin: 3px 0 0;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        /* Spodní Navigace */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 450px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 25px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* Floating Button pro přidání */
+        .add-btn {
+            position: absolute;
+            top: 45px;
+            right: 25px;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        /* Skrytý formulář */
+        #add-form {
+            display: none;
+            background: var(--card-bg);
+            margin: 0 15px 20px;
+            padding: 20px;
+            border-radius: 24px;
         }
 
         input {
             width: 100%;
-            padding: 12px 0;
             border: none;
-            border-bottom: 1px solid var(--border);
-            outline: none;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            border-bottom-color: var(--highlight);
-        }
-
-        button {
-            width: 100%;
-            background: var(--highlight);
-            color: white;
-            border: none;
+            background: #f0f0f0;
             padding: 12px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-
-        .notifications {
-            margin-bottom: 30px;
-        }
-
-        .notif-item {
-            background: #fff9f9;
-            border-left: 2px solid #ff4d4d;
-            padding: 10px;
-            font-size: 0.8rem;
+            border-radius: 12px;
             margin-bottom: 10px;
-        }
-
-        .event-list {
-            margin-top: 40px;
-        }
-
-        .event-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--accent);
-            font-size: 0.9rem;
-        }
-
-        .event-date {
-            color: #888;
-            font-size: 0.75rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #ccc;
-            font-style: italic;
-            margin-top: 20px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 id="brand-title">Luvyx</h1>
+<div class="phone-container">
+    <header>
+        <div class="header-title">3 / 2026 <span>Za 3 dny</span></div>
+        <div class="add-btn" onclick="toggleForm()">+</div>
+    </header>
 
-    <div id="notifications" class="notifications"></div>
-
-    <div class="input-group">
-        <input type="text" id="event-name" placeholder="NÁZEV AKCE">
-        <input type="date" id="event-date">
-        <button onclick="addEvent()">PŘIDAT DO KALENDÁŘE</button>
+    <div id="add-form">
+        <input type="text" id="evName" placeholder="Název události">
+        <input type="date" id="evDate">
+        <button style="width:100%; background:var(--accent-blue); color:white; border:none; padding:10px; border-radius:10px;" onclick="addEvent()">Uložit</button>
     </div>
 
-    <div id="event-list" class="event-list"></div>
+    <div class="calendar-grid">
+        <div class="days-header">
+            <div>PO</div><div>ÚT</div><div>ST</div><div>ČT</div><div>PÁ</div><div>SO</div><div>NE</div>
+        </div>
+        <div class="days-grid">
+            <div class="day">23</div>
+            <div class="day">24</div>
+            <div class="day selected">25</div>
+            <div class="day">26</div>
+            <div class="day">27</div>
+            <div class="day" style="color:var(--accent-blue)">28</div>
+            <div class="day" style="color:var(--accent-blue)">29</div>
+            <div class="day">30</div>
+            <div class="day">31</div>
+        </div>
+    </div>
+
+    <div class="event-section" id="event-list">
+        </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item">Rok</div>
+        <div class="nav-item active">Měsíc</div>
+        <div class="nav-item">Týden</div>
+        <div class="nav-item">Den</div>
+    </div>
 </div>
 
 <script>
-    let events = JSON.parse(localStorage.getItem('my_private_events')) || [];
+    let events = JSON.parse(localStorage.getItem('luvyx_events')) || [
+        { name: 'Launch Knížky', date: '2026-03-28', color: '#8b5cf6' },
+        { name: 'Já má Narozeniny', date: '2026-03-28', color: '#ef4444' }
+    ];
+
+    function toggleForm() {
+        const form = document.getElementById('add-form');
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
 
     function addEvent() {
-        const name = document.getElementById('event-name').value;
-        const date = document.getElementById('event-date').value;
-
-        if (name && date) {
-            events.push({ name, date, id: Date.now() });
-            saveAndRender();
-            document.getElementById('event-name').value = '';
-            document.getElementById('event-date').value = '';
+        const name = document.getElementById('evName').value;
+        const date = document.getElementById('evDate').value;
+        if(name && date) {
+            events.push({ name, date, color: '#3b82f6' });
+            localStorage.setItem('luvyx_events', JSON.stringify(events));
+            render();
+            toggleForm();
         }
     }
 
-    function deleteEvent(id) {
-        events = events.filter(e => e.id !== id);
-        saveAndRender();
-    }
-
-    function saveAndRender() {
-        localStorage.setItem('my_private_events', JSON.stringify(events));
-        renderEvents();
-        checkNotifications();
-    }
-
-    function checkNotifications() {
-        const notifContainer = document.getElementById('notifications');
-        notifContainer.innerHTML = '';
-        const today = new Date();
-        const threeDaysLater = new Date();
-        threeDaysLater.setDate(today.getDate() + 3);
-
-        events.forEach(ev => {
-            const evDate = new Date(ev.date);
-            if (evDate >= today && evDate <= threeDaysLater) {
-                const div = document.createElement('div');
-                div.className = 'notif-item';
-                div.innerHTML = `<strong>POZOR:</strong> ${ev.name} se blíží (za méně než 3 dny)!`;
-                notifContainer.appendChild(div);
-            }
-        });
-    }
-
-    function renderEvents() {
+    function render() {
         const list = document.getElementById('event-list');
         list.innerHTML = '';
-
-        if (events.length === 0) {
-            list.innerHTML = '<div class="empty-state">Zatím žádné plány...</div>';
-            return;
-        }
-
-        // Seřazení podle data
-        events.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        events.forEach(ev => {
-            const div = document.createElement('div');
-            div.className = 'event-item';
-            div.innerHTML = `
-                <div>
-                    <div>${ev.name}</div>
-                    <div class="event-date">${new Date(ev.date).toLocaleDateString('cs-CZ')}</div>
+        
+        events.forEach((ev, index) => {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            card.innerHTML = `
+                <div class="event-color" style="background:${ev.color}"></div>
+                <div class="event-info">
+                    <h3>${ev.name}</h3>
+                    <p>${new Date(ev.date).toLocaleDateString('cs-CZ')}</p>
                 </div>
-                <span style="cursor:pointer; color:#ccc;" onclick="deleteEvent(${ev.id})">✕</span>
+                <div style="color:#ccc; font-size:12px;" onclick="remove(${index})">✕</div>
             `;
-            list.appendChild(div);
+            list.appendChild(card);
         });
     }
 
-    // Počáteční načtení
-    renderEvents();
-    checkNotifications();
+    function remove(index) {
+        events.splice(index, 1);
+        localStorage.setItem('luvyx_events', JSON.stringify(events));
+        render();
+    }
+
+    render();
 </script>
 
 </body>
-  </html>
-
+</html>
