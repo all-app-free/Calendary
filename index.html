@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thrum & Luvyx Calendar</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --accent: #f0f0f0;
+            --border: #e0e0e0;
+            --highlight: #000000;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            font-weight: 200;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 0;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            outline: none;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-bottom-color: var(--highlight);
+        }
+
+        button {
+            width: 100%;
+            background: var(--highlight);
+            color: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .notifications {
+            margin-bottom: 30px;
+        }
+
+        .notif-item {
+            background: #fff9f9;
+            border-left: 2px solid #ff4d4d;
+            padding: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .event-list {
+            margin-top: 40px;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .event-date {
+            color: #888;
+            font-size: 0.75rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #ccc;
+            font-style: italic;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="brand-title">Luvyx</h1>
+
+    <div id="notifications" class="notifications"></div>
+
+    <div class="input-group">
+        <input type="text" id="event-name" placeholder="NÁZEV AKCE">
+        <input type="date" id="event-date">
+        <button onclick="addEvent()">PŘIDAT DO KALENDÁŘE</button>
+    </div>
+
+    <div id="event-list" class="event-list"></div>
+</div>
+
+<script>
+    let events = JSON.parse(localStorage.getItem('my_private_events')) || [];
+
+    function addEvent() {
+        const name = document.getElementById('event-name').value;
+        const date = document.getElementById('event-date').value;
+
+        if (name && date) {
+            events.push({ name, date, id: Date.now() });
+            saveAndRender();
+            document.getElementById('event-name').value = '';
+            document.getElementById('event-date').value = '';
+        }
+    }
+
+    function deleteEvent(id) {
+        events = events.filter(e => e.id !== id);
+        saveAndRender();
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('my_private_events', JSON.stringify(events));
+        renderEvents();
+        checkNotifications();
+    }
+
+    function checkNotifications() {
+        const notifContainer = document.getElementById('notifications');
+        notifContainer.innerHTML = '';
+        const today = new Date();
+        const threeDaysLater = new Date();
+        threeDaysLater.setDate(today.getDate() + 3);
+
+        events.forEach(ev => {
+            const evDate = new Date(ev.date);
+            if (evDate >= today && evDate <= threeDaysLater) {
+                const div = document.createElement('div');
+                div.className = 'notif-item';
+                div.innerHTML = `<strong>POZOR:</strong> ${ev.name} se blíží (za méně než 3 dny)!`;
+                notifContainer.appendChild(div);
+            }
+        });
+    }
+
+    function renderEvents() {
+        const list = document.getElementById('event-list');
+        list.innerHTML = '';
+
+        if (events.length === 0) {
+            list.innerHTML = '<div class="empty-state">Zatím žádné plány...</div>';
+            return;
+        }
+
+        // Seřazení podle data
+        events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        events.forEach(ev => {
+            const div = document.createElement('div');
+            div.className = 'event-item';
+            div.innerHTML = `
+                <div>
+                    <div>${ev.name}</div>
+                    <div class="event-date">${new Date(ev.date).toLocaleDateString('cs-CZ')}</div>
+                </div>
+                <span style="cursor:pointer; color:#ccc;" onclick="deleteEvent(${ev.id})">✕</span>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    // Počáteční načtení
+    renderEvents();
+    checkNotifications();
+</script>
+
+</body>
+  </html>
+
