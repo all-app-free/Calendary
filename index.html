@@ -18,26 +18,16 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; overflow-x: hidden; }
         .app { width: 100%; max-width: 450px; min-height: 100vh; margin: 0 auto; padding-bottom: 100px; position: relative; }
 
-        /* HEADER & WIDGETS */
         header { padding: 50px 20px 10px; }
         .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .brand { font-size: 2.4rem; font-weight: 600; letter-spacing: -2px; }
-        .widgets { display: flex; gap: 15px; font-size: 0.8rem; font-weight: 500; color: var(--accent); }
-        .greeting-box { background: var(--card); padding: 15px; border-radius: 20px; margin: 10px 15px; font-size: 0.85rem; border: 1px solid var(--border); }
+        .widgets { display: flex; gap: 15px; font-size: 0.8rem; font-weight: 500; color: var(--accent); align-items: center; }
 
-        /* PAGES */
         .page { display: none; padding: 0 15px; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* YEAR VIEW (100% Functional) */
-        .year-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .mini-month { font-size: 0.5rem; background: var(--card); padding: 5px; border-radius: 10px; text-align: center; cursor: pointer; }
-        .mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; margin-top: 5px; }
-        .mini-day { width: 4px; height: 4px; border-radius: 50%; margin: 1px auto; background: var(--border); }
-        .mini-day.has-ev { background: var(--accent); }
-
-        /* CALENDAR CARD */
+        /* CALENDAR */
         .calendar-card { background: var(--card); border-radius: 30px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
         .day { padding: 12px 0; font-size: 0.9rem; border-radius: 15px; cursor: pointer; position: relative; }
@@ -45,30 +35,20 @@
         .day.selected { background: var(--text); color: var(--card); }
         .day.has-ev::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
 
-        /* MOOD TRACKER */
-        .mood-bar { display: flex; justify-content: space-around; margin: 20px 0; background: var(--card); padding: 10px; border-radius: 20px; }
-        .mood-btn { cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.3s; }
-        .mood-btn.active { filter: grayscale(0); transform: scale(1.2); }
+        /* MOOD */
+        .mood-bar { display: flex; justify-content: space-around; margin: 20px 0; background: var(--card); padding: 10px; border-radius: 20px; border: 1px solid var(--border); }
+        .mood-btn { cursor: pointer; font-size: 1.2rem; filter: grayscale(1); transition: 0.3s; opacity: 0.5; }
+        .mood-btn.active { filter: grayscale(0); transform: scale(1.2); opacity: 1; }
 
-        /* FOCUS MODE */
-        .focus-box { text-align: center; padding: 40px 20px; background: var(--card); border-radius: 30px; margin-top: 20px; }
-        #focus-timer { font-size: 3rem; font-weight: 100; color: var(--focus); margin: 20px 0; }
-
-        /* EVENTS & VAULT */
-        .ev-card { background: var(--card); padding: 15px; border-radius: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border-left: 5px solid var(--accent); position: relative; }
-        .ev-vault { border-left-color: #000; background: #f0f0f0; }
-        .countdown { font-size: 0.65rem; font-weight: 700; color: var(--focus); margin-top: 4px; }
-
-        /* NAV */
+        /* LISTS */
+        .ev-card { background: var(--card); padding: 15px; border-radius: 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border-left: 5px solid var(--accent); }
         .nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: var(--card); display: flex; padding: 15px 0 35px; border-top: 1px solid var(--border); z-index: 100; }
         .nav-item { flex: 1; text-align: center; font-size: 0.7rem; color: var(--text-sec); cursor: pointer; }
         .nav-item.active { color: var(--accent); font-weight: 600; }
 
-        /* MODALS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: flex-end; }
         .modal-content { background: var(--card); width: 100%; padding: 30px 20px; border-radius: 30px 30px 0 0; }
-        input, select { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid var(--border); background: var(--bg); color: var(--text); box-sizing: border-box; }
-        .quote { font-style: italic; font-size: 0.75rem; text-align: center; margin-top: 20px; opacity: 0.5; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid var(--border); background: var(--bg); color: var(--text); box-sizing: border-box; }
     </style>
 </head>
 <body data-theme="light">
@@ -78,61 +58,45 @@
         <div class="top-row">
             <div class="brand">Luvyx</div>
             <div class="widgets">
-                <span id="temp">21°C ☀️</span>
+                <span id="weather-info">Načítání...</span>
                 <span id="clock">00:00</span>
                 <span onclick="toggleTheme()" style="cursor:pointer">🌓</span>
             </div>
         </div>
     </header>
 
-    <div class="greeting-box" id="greeting">Načítání...</div>
-
-    <div id="p-year" class="page">
-        <div class="year-grid" id="year-container"></div>
-    </div>
-
     <div id="p-month" class="page active">
         <div class="calendar-card">
-            <div id="m-label" style="font-weight: 600; margin-bottom: 15px;"></div>
+            <div id="m-label" style="font-weight: 600; margin-bottom: 15px; font-size: 0.8rem; letter-spacing: 1px;"></div>
             <div class="grid" style="font-size:0.6rem; font-weight:700; color:var(--text-sec); margin-bottom:10px">
                 <div>PO</div><div>ÚT</div><div>ST</div><div>ČT</div><div>PÁ</div><div>SO</div><div>NE</div>
             </div>
             <div class="grid" id="m-days"></div>
         </div>
+        
         <div class="mood-bar">
-            <span class="mood-btn" onclick="setMood('happy')">😊</span>
-            <span class="mood-btn" onclick="setMood('neutral')">😐</span>
-            <span class="mood-btn" onclick="setMood('sad')">😔</span>
+            <span class="mood-btn" id="mood-happy" onclick="saveMood('happy')">😊</span>
+            <span class="mood-btn" id="mood-neutral" onclick="saveMood('neutral')">😐</span>
+            <span class="mood-btn" id="mood-sad" onclick="saveMood('sad')">😔</span>
         </div>
-        <div class="upcoming-header" style="font-size:0.7rem; color:var(--text-sec); margin: 20px 0 10px 5px;">NADCHÁZEJÍCÍ</div>
-        <div id="upcoming-list"></div>
+
+        <div id="upcoming-list" style="margin-top:20px"></div>
     </div>
 
-    <div id="p-focus" class="page">
-        <div class="focus-box">
-            <h3>Focus Mode</h3>
-            <div id="focus-timer">25:00</div>
-            <button onclick="startFocus()" class="btn" style="padding:10px 20px; border-radius:20px; border:1px solid var(--focus); background:none; color:var(--focus); cursor:pointer">Soustředit se</button>
-        </div>
+    <div id="p-detail" class="page">
+        <h3 id="detail-date-label">Detail</h3>
+        <div id="detail-events"></div>
+        <button onclick="nav('month')" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:10px; border-radius:10px; width:100%; margin-top:20px">Zpět do kalendáře</button>
     </div>
 
-    <div id="p-vault" class="page">
-        <header><div class="view-title">Trezor</div></header>
-        <div id="vault-auth">
-            <input type="password" id="v-pass" placeholder="Zadej heslo">
-            <button onclick="unlockVault()" style="width:100%; padding:15px; border-radius:15px; background:black; color:white; border:none">Odemknout</button>
-        </div>
-        <div id="vault-content" style="display:none"></div>
+    <div id="p-year" class="page">
+        <div id="year-container" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;"></div>
     </div>
-
-    <div class="quote" id="daily-quote">"Dnešek je tvá příležitost."</div>
 
     <nav class="nav">
         <div class="nav-item" onclick="nav('year')">Rok</div>
         <div class="nav-item active" onclick="nav('month')">Měsíc</div>
-        <div class="nav-item" onclick="nav('focus')">Focus</div>
-        <div class="nav-item" onclick="nav('vault')">Trezor</div>
-        <div class="nav-item" onclick="openModal()" style="font-weight:bold; color:var(--accent)">+</div>
+        <div class="nav-item" onclick="openModal()" style="font-weight:bold; color:var(--accent)">+ Přidat</div>
     </nav>
 </div>
 
@@ -141,161 +105,137 @@
         <h3>Nová událost</h3>
         <input type="text" id="ev-name" placeholder="Název">
         <input type="date" id="ev-date">
-        <select id="ev-type">
-            <option value="normal">Normální</option>
-            <option value="vault">Soukromá (Trezor)</option>
-        </select>
         <button onclick="saveEvent()" style="width:100%; padding:15px; border-radius:15px; background:var(--accent); color:white; border:none">Uložit</button>
     </div>
 </div>
 
 <script>
-    let events = JSON.parse(localStorage.getItem('luvyx_pro_v5')) || [];
-    let moods = JSON.parse(localStorage.getItem('luvyx_moods')) || {};
+    let events = JSON.parse(localStorage.getItem('luvyx_final_v1')) || [];
+    let moods = JSON.parse(localStorage.getItem('luvyx_moods_v1')) || {};
     let selectedDate = new Date().toISOString().split('T')[0];
 
-    // 1. DYNAMICKÉ HODINY A POZDRAV
-    function initTime() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'});
-        const hr = now.getHours();
-        const greet = hr<12 ? "Dobré ráno" : hr<18 ? "Dobrý den" : "Dobrý večer";
-        const nextEv = events.find(e => new Date(e.date) >= now.setHours(0,0,0,0));
-        document.getElementById('greeting').innerText = `${greet}! ${nextEv ? `Příště tě čeká: ${nextEv.name}` : 'Dnes máš volno.'}`;
+    // WEATHER API (Open-Meteo)
+    async function fetchWeather() {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const data = await res.json();
+                document.getElementById('weather-info').innerText = `${Math.round(data.current_weather.temperature)}°C 📍`;
+            } catch (e) {
+                document.getElementById('weather-info').innerText = "--°C";
+            }
+        });
     }
-    setInterval(initTime, 1000);
 
-    // 2. TÉMA
+    function initClock() {
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
+    }
+
     function toggleTheme() {
         document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
     }
 
-    // 3. NAVIGACE
     function nav(p) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('p-'+p).classList.add('active');
-        if(p === 'year') renderYear();
         if(p === 'month') renderMonth();
+        if(p === 'year') renderYear();
     }
 
-    // 4. ROČNÍ KALENDÁŘ (12 měsíců)
-    function renderYear() {
-        const cont = document.getElementById('year-container');
-        cont.innerHTML = '';
-        const year = new Date().getFullYear();
-        const months = ['Led', 'Úno', 'Bře', 'Dub', 'Kvě', 'Čer', 'Čec', 'Srp', 'Zář', 'Říj', 'Lis', 'Pro'];
-
-        months.forEach((m, idx) => {
-            let daysInM = new Date(year, idx + 1, 0).getDate();
-            let html = `<div class="mini-month" onclick="nav('month')"><strong>${m}</strong><div class="mini-grid">`;
-            for(let i=1; i<=daysInM; i++) {
-                const dStr = `${year}-${(idx+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
-                const hasEv = events.some(e => e.date === dStr);
-                html += `<div class="mini-day ${hasEv?'has-ev':''}"></div>`;
-            }
-            html += `</div></div>`;
-            cont.innerHTML += html;
-        });
+    // MOOD LOGIC
+    function saveMood(m) {
+        moods[selectedDate] = m;
+        localStorage.setItem('luvyx_moods_v1', JSON.stringify(moods));
+        updateMoodUI();
     }
 
-    // 5. MĚSÍČNÍ KALENDÁŘ
+    function updateMoodUI() {
+        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+        const currentMood = moods[selectedDate];
+        if(currentMood) document.getElementById('mood-'+currentMood).classList.add('active');
+    }
+
+    // MONTH RENDER
     function renderMonth() {
         const grid = document.getElementById('m-days');
         const now = new Date();
         document.getElementById('m-label').innerText = now.toLocaleDateString('cs-CZ', {month:'long', year:'numeric'}).toUpperCase();
         grid.innerHTML = '';
         
-        const first = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-        const offset = first === 0 ? 6 : first - 1;
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+        const offset = firstDay === 0 ? 6 : firstDay - 1;
+
         for(let i=0; i<offset; i++) grid.innerHTML += '<div></div>';
 
-        for(let d=1; d<=new Date(now.getFullYear(), now.getMonth()+1, 0).getDate(); d++) {
+        for(let d=1; d<=daysInMonth; d++) {
             const dStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
             const isToday = dStr === new Date().toISOString().split('T')[0];
-            const hasEv = events.some(e => e.date === dStr && e.type !== 'vault');
-            grid.innerHTML += `<div class="day ${isToday?'today':''} ${hasEv?'has-ev':''}" onclick="selectedDate='${dStr}'; renderMonth(); renderUpcoming();">${d}</div>`;
+            const isSelected = dStr === selectedDate;
+            const hasEv = events.some(e => e.date === dStr);
+            
+            grid.innerHTML += `<div class="day ${isToday?'today':''} ${isSelected?'selected':''} ${hasEv?'has-ev':''}" 
+                                onclick="openDay('${dStr}')">${d}</div>`;
         }
+        updateMoodUI();
     }
 
-    // 6. NADCHÁZEJÍCÍ A ODPOČET
-    function renderUpcoming() {
-        const cont = document.getElementById('upcoming-list');
+    function openDay(date) {
+        selectedDate = date;
+        document.getElementById('detail-date-label').innerText = new Date(date).toLocaleDateString('cs-CZ', {day:'numeric', month:'long'});
+        const list = document.getElementById('detail-events');
+        const dayEvs = events.filter(e => e.date === date);
+        list.innerHTML = dayEvs.length ? dayEvs.map(e => `
+            <div class="ev-card">
+                <div style="flex-grow:1"><h4>${e.name}</h4></div>
+                <span onclick="deleteEv(${e.id})" style="cursor:pointer">✕</span>
+            </div>`).join('') : '<p style="text-align:center; opacity:0.5">Žádné akce</p>';
+        nav('detail');
+    }
+
+    function renderYear() {
+        const cont = document.getElementById('year-container');
         cont.innerHTML = '';
-        const today = new Date().setHours(0,0,0,0);
-        
-        const filtered = events.filter(e => e.type !== 'vault' && new Date(e.date) >= today)
-                               .sort((a,b) => new Date(a.date) - new Date(b.date)).slice(0,3);
-
-        filtered.forEach(e => {
-            const diff = Math.ceil((new Date(e.date) - today) / (1000*60*60*24));
-            cont.innerHTML += `
-                <div class="ev-card">
-                    <div style="flex-grow:1">
-                        <h4>${e.name}</h4>
-                        <p style="font-size:0.7rem; color:var(--text-sec)">${new Date(e.date).toLocaleDateString('cs-CZ')}</p>
-                        <div class="countdown">${diff === 0 ? 'DNES' : `Zbývá: ${diff} dní`}</div>
-                    </div>
-                    <span onclick="deleteEv(${e.id})" style="opacity:0.2">✕</span>
-                </div>`;
-        });
-    }
-
-    // 7. FOCUS TIMER
-    let timer;
-    function startFocus() {
-        let sec = 25 * 60;
-        clearInterval(timer);
-        timer = setInterval(() => {
-            sec--;
-            let m = Math.floor(sec/60);
-            let s = sec%60;
-            document.getElementById('focus-timer').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(sec <= 0) clearInterval(timer);
-        }, 1000);
-    }
-
-    // 8. VAULT (TREZOR)
-    function unlockVault() {
-        if(document.getElementById('v-pass').value === '1234') {
-            document.getElementById('vault-auth').style.display = 'none';
-            const cont = document.getElementById('vault-content');
-            cont.style.display = 'block';
-            const vaultEvs = events.filter(e => e.type === 'vault');
-            cont.innerHTML = vaultEvs.map(e => `<div class="ev-card ev-vault"><h4>🔒 ${e.name}</h4></div>`).join('');
-        } else { alert("Špatné heslo!"); }
-    }
-
-    // 9. MOOD & MODAL LOGIC
-    function setMood(m) {
-        moods[new Date().toISOString().split('T')[0]] = m;
-        localStorage.setItem('luvyx_moods', JSON.stringify(moods));
-        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-        // Jednoduchá vizuální zpětná vazba
+        const y = new Date().getFullYear();
+        for(let m=0; m<12; m++) {
+            let days = new Date(y, m+1, 0).getDate();
+            let html = `<div style="background:var(--card); padding:5px; border-radius:10px; font-size:0.5rem; text-align:center">
+                <strong>${m+1}</strong><div style="display:grid; grid-template-columns:repeat(7,1fr); gap:1px">`;
+            for(let d=1; d<=days; d++) {
+                const dStr = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+                html += `<div style="width:3px; height:3px; background:${events.some(e=>e.date===dStr)?'var(--accent)':'var(--border)'}; border-radius:50%"></div>`;
+            }
+            cont.innerHTML += html + '</div></div>';
+        }
     }
 
     function openModal() { document.getElementById('modal').style.display = 'flex'; }
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
     function saveEvent() {
-        const name = document.getElementById('ev-name').value;
-        const date = document.getElementById('ev-date').value;
-        const type = document.getElementById('ev-type').value;
-        if(name && date) {
-            events.push({id: Date.now(), name, date, type});
-            localStorage.setItem('luvyx_pro_v5', JSON.stringify(events));
-            closeModal(); renderAll();
+        const n = document.getElementById('ev-name').value;
+        const d = document.getElementById('ev-date').value;
+        if(n && d) {
+            events.push({id: Date.now(), name: n, date: d});
+            localStorage.setItem('luvyx_final_v1', JSON.stringify(events));
+            closeModal(); renderMonth();
         }
     }
 
     function deleteEv(id) {
         events = events.filter(e => e.id !== id);
-        localStorage.setItem('luvyx_pro_v5', JSON.stringify(events));
-        renderAll();
+        localStorage.setItem('luvyx_final_v1', JSON.stringify(events));
+        openDay(selectedDate);
     }
 
-    function renderAll() { renderMonth(); renderUpcoming(); renderYear(); initTime(); }
-    renderAll();
+    fetchWeather();
+    initClock();
+    renderMonth();
 </script>
 </body>
     </html>
